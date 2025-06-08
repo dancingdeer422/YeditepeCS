@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to YeditepeCardShop</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 30px 20px;
+            border: 1px solid #ddd;
+        }
+        .welcome-box {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .features {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .feature-icon {
+            font-size: 1.5em;
+            margin-right: 15px;
+            width: 30px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .footer {
+            background: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 8px 8px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎉 Welcome to YeditepeCardShop!</h1>
+        <p>Your gateway to the world of One Piece Trading Cards</p>
+    </div>
+
+    <div class="content">
+        <div class="welcome-box">
+            <h2>Hello <span th:text="${user.firstName}">Customer</span>! 👋</h2>
+            <p>Thank you for joining YeditepeCardShop! We're excited to have you as part of our community.</p>
+        </div>
+
+        <p>Your account has been successfully created with the email: <strong th:text="${user.email}">email@example.com</strong></p>
+
+        <div class="features">
+            <h3>What you can do now:</h3>
+            
+            <div class="feature-item">
+                <span class="feature-icon">🃏</span>
+                <div>
+                    <strong>Browse Our Collection</strong><br>
+                    Explore our complete range of One Piece Trading Card packs, boxes, and cases
+                </div>
+            </div>
+            
+            <div class="feature-item">
+                <span class="feature-icon">🛒</span>
+                <div>
+                    <strong>Easy Shopping</strong><br>
+                    Add items to your cart and checkout securely
+                </div>
+            </div>
+            
+            <div class="feature-item">
+                <span class="feature-icon">📦</span>
+                <div>
+                    <strong>Track Your Orders</strong><br>
+                    Monitor your order status and history from your profile
+                </div>
+            </div>
+            
+            <div class="feature-item">
+                <span class="feature-icon">🏠</span>
+                <div>
+                    <strong>Manage Addresses</strong><br>
+                    Save multiple shipping addresses for faster checkout
+                </div>
+            </div>
+            
+            <div class="feature-item">
+                <span class="feature-icon">📧</span>
+                <div>
+                    <strong>Stay Updated</strong><br>
+                    Receive email notifications about your orders and new products
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <p><strong>Ready to start shopping?</strong></p>
+            <a href="http://localhost:8080" class="cta-button">Start Shopping Now</a>
+        </div>
+
+        <div class="welcome-box">
+            <h3>🎯 Featured Categories</h3>
+            <p><strong>Booster Packs</strong> - Perfect for individual card collecting</p>
+            <p><strong>Booster Boxes</strong> - Great value for serious collectors</p>
+            <p><strong>Cases</strong> - Ultimate choice for retailers and enthusiasts</p>
+        </div>
+
+        <p>If you have any questions or need assistance, please don't hesitate to contact us. We're here to help!</p>
+        
+        <p>Happy collecting!</p>
+        <p><strong>The YeditepeCardShop Team</strong></p>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 YeditepeCardShop. All rights reserved.</p>
+        <p>You're receiving this email because you created an account with us.</p>
+    </div>
+</body>
+</html>

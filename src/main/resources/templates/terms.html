@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms & Conditions - YeditepeCS</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="main-header">
+    <a th:href="@{/}" class="logo-link">
+      <div class="logo">
+        <img th:src="@{/images/logo.png}" alt="YeditepeCS Logo">
+        <span>YEDITEPECS</span>
+      </div>
+    </a>
+    <div class="search-bar">
+      <input type="text" placeholder="Which card are you looking for...">
+      <button>🔍</button>
+    </div>
+    <div class="user-actions">
+      <a th:href="@{/my-account}">Login / Register</a>
+      <a th:href="@{/cart}">
+        <span>Cart</span>
+        <i class="fa-solid fa-cart-shopping" style="font-size: 20px; color: white;"></i>
+      </a>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <ul>
+      <li><a th:href="@{/}">Home</a></li>
+      <li><a th:href="@{/packs}">Booster Packs</a></li>
+      <li><a th:href="@{/boxes}">Booster Boxes</a></li>
+      <li><a th:href="@{/cases}">Cases</a></li>
+    </ul>
+  </nav>
+
+  <!-- Content -->
+  <section class="content">
+    <h1>Terms & Conditions</h1>
+    <div class="terms-content">
+      <h2>1. Agreement to Terms</h2>
+      <p>By accessing and using YeditepeCS Card Shop, you agree to be bound by these Terms and Conditions.</p>
+
+      <h2>2. Product Information</h2>
+      <p>We strive to display our products as accurately as possible. However, we cannot guarantee that your screen's display of any color will be accurate.</p>
+
+      <h2>3. Pricing and Payment</h2>
+      <p>All prices are in USD and include applicable taxes. We reserve the right to change prices at any time.</p>
+
+      <h2>4. Shipping and Delivery</h2>
+      <p>Shipping times may vary depending on your location. We are not responsible for delays beyond our control.</p>
+
+      <h2>5. Returns and Refunds</h2>
+      <p>Please refer to our Return Policy for detailed information about returns and refunds.</p>
+    </div>
+  </section>
+
+  <!-- Information Footer -->
+  <section class="info-footer">
+    <div class="info-footer-content">
+      <div class="info-section">
+        <h3>Information</h3>
+        <ul>
+          <li><a th:href="@{/contact}">Contact</a></li>
+          <li><a th:href="@{/privacy-policy}">Privacy Policy</a></li>
+          <li><a th:href="@{/shipping}">Shipping Details</a></li>
+          <li><a th:href="@{/terms}">Terms & Conditions</a></li>
+          <li><a th:href="@{/cancel}">Right to cancel</a></li>
+          <li><a th:href="@{/commercial-transaction}">Specified Commercial Transaction Act</a></li>
+        </ul>
+      </div>
+      <div class="info-section company-info">
+        <h3>YeditepeCS Card Shop</h3>
+        <p>Operating Company:</p>
+        <p>YEDITEPECS SHOP TURKEY, LLC</p>
+        <p>Kadikoy</p>
+        <p>Istanbul, Turkey</p>
+        <p>Corporate number: TR123456789</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 YeditepeCS. All rights reserved.</p>
+    <a th:href="@{/privacy-policy}">Privacy Policy</a> | <a th:href="@{/terms}">Terms of Service</a>
+  </footer>
+</body>
+</html>

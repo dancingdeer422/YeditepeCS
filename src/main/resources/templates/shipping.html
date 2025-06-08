@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipping Details - YeditepeCS</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="main-header">
+    <a th:href="@{/}" class="logo-link">
+      <div class="logo">
+        <img th:src="@{/images/logo.png}" alt="YeditepeCS Logo">
+        <span>YEDITEPECS</span>
+      </div>
+    </a>
+    <div class="search-bar">
+      <input type="text" placeholder="Which card are you looking for...">
+      <button>🔍</button>
+    </div>
+    <div class="user-actions">
+      <a th:href="@{/my-account}">Login / Register</a>
+      <a th:href="@{/cart}">
+        <span>Cart</span>
+        <i class="fa-solid fa-cart-shopping" style="font-size: 20px; color: white;"></i>
+      </a>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <ul>
+      <li><a th:href="@{/}">Home</a></li>
+      <li><a th:href="@{/packs}">Booster Packs</a></li>
+      <li><a th:href="@{/boxes}">Booster Boxes</a></li>
+      <li><a th:href="@{/cases}">Cases</a></li>
+    </ul>
+  </nav>
+
+  <!-- Content -->
+  <section class="content">
+    <h1>Shipping Details</h1>
+    <div class="shipping-content">
+      <h2>1. Shipping Methods</h2>
+      <p>We offer the following shipping options:</p>
+      <ul>
+        <li>Standard Shipping (3-5 business days)</li>
+        <li>Express Shipping (1-2 business days)</li>
+      </ul>
+
+      <h2>2. Shipping Costs</h2>
+      <p>Shipping costs are calculated based on:</p>
+      <ul>
+        <li>Order weight</li>
+        <li>Delivery location</li>
+        <li>Selected shipping method</li>
+      </ul>
+
+      <h2>3. International Shipping</h2>
+      <p>We currently ship to the following regions:</p>
+      <ul>
+        <li>Turkey (All regions)</li>
+        <li>European Union</li>
+        <li>United States</li>
+        <li>Canada</li>
+      </ul>
+
+      <h2>4. Tracking Information</h2>
+      <p>Once your order ships, you will receive a tracking number via email.</p>
+    </div>
+  </section>
+
+  <!-- Information Footer -->
+  <section class="info-footer">
+    <div class="info-footer-content">
+      <div class="info-section">
+        <h3>Information</h3>
+        <ul>
+          <li><a th:href="@{/contact}">Contact</a></li>
+          <li><a th:href="@{/privacy-policy}">Privacy Policy</a></li>
+          <li><a th:href="@{/shipping}">Shipping Details</a></li>
+          <li><a th:href="@{/terms}">Terms & Conditions</a></li>
+          <li><a th:href="@{/cancel}">Right to cancel</a></li>
+          <li><a th:href="@{/commercial-transaction}">Specified Commercial Transaction Act</a></li>
+        </ul>
+      </div>
+      <div class="info-section company-info">
+        <h3>YeditepeCS Card Shop</h3>
+        <p>Operating Company:</p>
+        <p>YEDITEPECS SHOP TURKEY, LLC</p>
+        <p>Kadikoy</p>
+        <p>Istanbul, Turkey</p>
+        <p>Corporate number: TR123456789</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 YeditepeCS. All rights reserved.</p>
+    <a th:href="@{/privacy-policy}">Privacy Policy</a> | <a th:href="@{/terms}">Terms of Service</a>
+  </footer>
+</body>
+</html>

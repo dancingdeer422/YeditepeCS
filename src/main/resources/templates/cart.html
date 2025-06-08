@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - YeditepeCS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .cart-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            min-height: 400px;
+        }
+        
+        .cart-container h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .cart-table th,
+        .cart-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        
+        .cart-table th {
+            background-color: #333;
+            color: #ff0000;
+            font-weight: bold;
+        }
+        
+        .cart-table tr:hover {
+            background-color: #333;
+        }
+        
+        .prod-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .prod-info img {
+            width: 50px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        .qty-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quantity-btn {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .quantity-btn:hover {
+            background-color: #cc0000;
+        }
+        
+        .quantity {
+            min-width: 30px;
+            text-align: center;
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .remove-btn {
+            background-color: transparent;
+            color: #ff0000;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 5px;
+        }
+        
+        .remove-btn:hover {
+            color: #cc0000;
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            color: #ccc;
+        }
+        
+        .empty-cart i {
+            font-size: 4em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .empty-cart p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        
+        .continue-shopping {
+            background-color: #ff0000;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .continue-shopping:hover {
+            background-color: #cc0000;
+        }
+        
+        .cart-summary {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #ff0000;
+        }
+        
+        .checkout-btn {
+            background-color: #ff0000;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        
+        .checkout-btn:hover {
+            background-color: #cc0000;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .summary-row.total {
+            font-weight: bold;
+            font-size: 1.2em;
+            border-top: 1px solid #444;
+            padding-top: 10px;
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <a th:href="@{/}" class="logo-link">
+            <div class="logo">
+                <img th:src="@{/images/logo.png}" alt="YeditepeCS Logo">
+                <span>YEDITEPECS</span>
+            </div>
+        </a>
+        <div class="search-bar">
+            <input type="text" placeholder="Which card are you looking for...">
+            <button>🔍</button>
+        </div>
+        <div class="user-actions">
+            <a th:href="@{/my-account}" sec:authorize="!isAuthenticated()">Login / Register</a>
+            <a th:href="@{/profile}" sec:authorize="isAuthenticated()">My Profile</a>
+            <a th:href="@{/cart}">
+                <span>Cart</span>
+                <i class="fa-solid fa-cart-shopping" style="font-size: 20px; color: white;"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <ul>
+            <li><a th:href="@{/}">Home</a></li>
+            <li><a th:href="@{/packs}">Booster Packs</a></li>
+            <li><a th:href="@{/boxes}">Booster Boxes</a></li>
+            <li><a th:href="@{/cases}">Cases</a></li>
+        </ul>
+    </nav>
+
+    <!-- Cart Content -->
+    <div class="cart-container">
+        <h1>Shopping Cart</h1>
+            <!-- Cart Success Message -->
+            <div th:if="${cartSuccess}" class="alert alert-success" style="padding: 10px; margin: 15px 0; border: 1px solid #d4edda; color: #155724; background-color: #d4edda; border-radius: 4px; text-align: center;">
+                <p th:text="${cartSuccess}"></p>
+            </div>
+            <div class="cart-items" th:if="${not #lists.isEmpty(cartItems)}">
+                <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="cart-item" th:each="item : ${cartItems}">
+                                <td class="prod-info">
+                                    <img th:src="@{'/images/' + ${item.product.imagePath}}" th:alt="${item.product.title}">
+                                    <span th:text="${item.product.title + ' – ' + item.product.categoryName}">Product Name</span>
+                                </td>
+                                <td th:text="${item.product.basePrice + ' $'}">0.00 $</td>
+                                <td>
+                                    <div class="qty-form">
+                                        <button class="quantity-btn minus btn-small" th:data-product-id="${item.product.id}">-</button>
+                                        <span class="quantity" th:text="${item.quantity}">1</span>
+                                        <button class="quantity-btn plus btn-small" th:data-product-id="${item.product.id}">+</button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="remove-btn btn-link" th:data-product-id="${item.product.id}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+            </div>
+
+            <div class="empty-cart" th:if="${#lists.isEmpty(cartItems)}">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Your cart is empty</p>
+                <a th:href="@{/}" class="continue-shopping">Continue Shopping</a>
+            </div>
+
+            <div class="cart-summary" th:if="${not #lists.isEmpty(cartItems)}" style="display: flex; align-items: center; justify-content: space-between; margin-top: 30px;">
+                <button class="checkout-btn" th:onclick="'proceedToCheckout()'">Proceed to Checkout</button>
+                <div>
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span th:text="${subtotal + ' $'}">0.00 $</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span th:text="${shipping + ' $'}">0.00 $</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span th:text="${total + ' $'}">0.00 $</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- Information Footer -->
+    <section class="info-footer">
+        <div class="info-footer-content">
+            <div class="info-section">
+                <h3>Information</h3>
+                <ul>
+                    <li><a th:href="@{/contact}">Contact</a></li>
+                    <li><a th:href="@{/privacy-policy}">Privacy Policy</a></li>
+                    <li><a th:href="@{/shipping}">Shipping Details</a></li>
+                    <li><a th:href="@{/terms}">Terms & Conditions</a></li>
+                    <li><a th:href="@{/cancel}">Right to cancel</a></li>
+                    <li><a th:href="@{/commercial-transaction}">Specified Commercial Transaction Act</a></li>
+                </ul>
+            </div>
+            <div class="info-section company-info">
+                <h3>YeditepeCS Card Shop</h3>
+                <p>Operating Company:</p>
+                <p>YEDITEPECS SHOP TURKEY, LLC</p>
+                <p>Kadikoy</p>
+                <p>Istanbul, Turkey</p>
+                <p>Corporate number: TR123456789</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 YeditepeCS. All rights reserved.</p>
+        <a th:href="@{/privacy-policy}">Privacy Policy</a> | <a th:href="@{/terms}">Terms of Service</a>
+    </footer>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Quantity controls
+            document.querySelectorAll('.quantity-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product-id');
+                    const isPlus = this.classList.contains('plus');
+                    const quantitySpan = this.parentElement.querySelector('.quantity');
+                    const currentQuantity = parseInt(quantitySpan.textContent, 10);
+                    const newQuantity = isPlus ? currentQuantity + 1 : currentQuantity - 1;
+                    
+                    const formData = new URLSearchParams();
+                    formData.append('productId', productId);
+                    formData.append('quantity', newQuantity);
+                    
+                    fetch('/api/cart/update-quantity', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]')?.value || ''
+                        },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert(data.message || 'Failed to update quantity');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Failed to update quantity');
+                    });
+                });
+            });
+
+            // Remove button
+            document.querySelectorAll('.remove-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to remove this item?')) {
+                        const productId = this.getAttribute('data-product-id');
+                        const formData = new URLSearchParams();
+                        formData.append('productId', productId);
+                        
+                        fetch('/api/cart/remove', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]')?.value || ''
+                            },
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(data.message || 'Failed to remove item');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Failed to remove item');
+                        });
+                    }
+                });
+            });
+        });
+
+        function proceedToCheckout() {
+            window.location.href = '/checkout';
+        }
+    </script>
+</body>
+</html>

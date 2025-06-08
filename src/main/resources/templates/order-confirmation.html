@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>Order Confirmation</title>
+    <style>
+        .order-details-table th, .order-details-table td {
+            padding: 8px;
+            text-align: left;
+        }
+        .order-details-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<main role="main" class="container mt-4">
+    <!-- Success message from RedirectAttributes -->
+    <div th:if="${success_message}" class="alert alert-success" role="alert">
+        <strong th:text="${success_message}"></strong>
+    </div>
+    <div th:if="${error_message}" class="alert alert-danger" role="alert">
+        <strong th:text="${error_message}"></strong>
+    </div>
+
+    <div th:if="${order}">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h1><i class="fas fa-check-circle"></i> Order Confirmed!</h1>
+            </div>
+            <div class="card-body">
+                <p class="lead">Thank you for your order. Your order has been successfully placed and confirmed.</p>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Order ID:</strong> <span th:text="${order.id}">[Order ID]</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Order Date:</strong> <span th:text="${order.orderDate != null ? #temporals.format(order.orderDate, 'dd MMMM yyyy, HH:mm') : 'N/A'}">[Order Date]</span>
+                    </div>
+                </div>
+                <p><strong>Order Status:</strong> <span class="badge bg-primary text-white" th:text="${order.status}">[Order Status]</span></p>
+
+                <hr/>
+
+                <h4>Shipping Address</h4>
+                <address th:if="${order.shippingAddress}">
+                    <strong th:text="${order.shippingAddress.title != null ? order.shippingAddress.title : ''}"></strong><br th:if="${order.shippingAddress.title != null}"/>
+                    <span th:text="${order.shippingAddress.street}">[Street]</span><br/>
+                    <span th:text="${order.shippingAddress.city}">[City]</span>, 
+                    <span th:text="${order.shippingAddress.district}">[District]</span><br/>
+                    <span th:text="${order.shippingAddress.zipCode}">[Zip Code]</span>
+                </address>
+                <p th:unless="${order.shippingAddress}">Shipping address not available.</p>
+
+                <hr/>
+
+                <h4>Order Items</h4>
+                <table class="table table-hover order-details-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Product</th>
+                            <th class="text-end">Quantity</th>
+                            <th class="text-end">Unit Price</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${order.items}">
+                            <td th:text="${item.productName}">[Product Name]</td>
+                            <td class="text-end" th:text="${item.quantity}">[Quantity]</td>
+                            <td class="text-end" th:text="${#numbers.formatCurrency(item.price)}">[Price]</td>
+                            <td class="text-end" th:text="${#numbers.formatCurrency(item.price * item.quantity)}">[Total]</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                            <td class="text-end" th:text="${#numbers.formatCurrency(#aggregates.sum(order.items.![price * quantity]))}"></td>
+                        </tr>
+                        <!-- Assuming shipping is 0 for now as per CartService logic -->
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Shipping:</strong></td>
+                            <td class="text-end" th:text="${#numbers.formatCurrency(0.00)}"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Grand Total:</strong></td>
+                            <td class="text-end"><strong><span th:text="${#numbers.formatCurrency(#aggregates.sum(order.items.![price * quantity]))}"></span></strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <div class="mt-4 text-center">
+                    <a th:href="@{/}" class="btn btn-primary me-2"><i class="fas fa-shopping-cart"></i> Continue Shopping</a>
+                    <a th:href="@{/profile}" class="btn btn-info"><i class="fas fa-list-alt"></i> View My Orders</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:unless="${order}" class="text-center mt-5">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                 <h1><i class="fas fa-exclamation-triangle"></i> Order Not Found</h1>
+            </div>
+            <div class="card-body">
+                <p class="lead" th:text="${error_message != null ? error_message : 'The requested order could not be found or you do not have permission to view it.'}"></p>
+                <a th:href="@{/}" class="btn btn-primary"><i class="fas fa-home"></i> Go to Homepage</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

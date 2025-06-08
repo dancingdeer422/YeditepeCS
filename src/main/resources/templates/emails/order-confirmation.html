@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+        .order-details {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .total-row {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #667eea;
+        }
+        .footer {
+            background: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 0 0 8px 8px;
+            font-size: 0.9em;
+        }
+        .status-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎉 Order Confirmed!</h1>
+        <p>Thank you for your order at YeditepeCardShop</p>
+    </div>
+
+    <div class="content">
+        <p>Dear <span th:text="${user.firstName + ' ' + user.lastName}">Customer</span>,</p>
+        
+        <p>Your order has been successfully placed and confirmed. Here are the details:</p>
+
+        <div class="order-details">
+            <h3>Order Information</h3>
+            <p><strong>Order ID:</strong> <span th:text="${order.id}">ORDER123</span></p>
+            <p><strong>Order Date:</strong> <span th:text="${#temporals.format(order.orderDate, 'dd MMMM yyyy, HH:mm')}">Date</span></p>
+            <p><strong>Status:</strong> <span class="status-badge" th:text="${order.status}">PROCESSING</span></p>
+        </div>
+
+        <div class="order-details">
+            <h3>Order Items</h3>
+            <div th:each="item : ${order.items}" class="item-row">
+                <span th:text="${item.productName + ' x' + item.quantity}">Product x1</span>
+                <span th:text="${#numbers.formatCurrency(item.price * item.quantity)}">$0.00</span>
+            </div>
+            <div class="item-row total-row">
+                <span>Total:</span>
+                <span th:text="${#numbers.formatCurrency(orderTotal)}">$0.00</span>
+            </div>
+        </div>
+
+        <div class="order-details">
+            <h3>Shipping Address</h3>
+            <p th:text="${order.shippingAddress.title}">Address Title</p>
+            <p th:text="${order.shippingAddress.addressLine}">Address Line</p>
+            <p th:text="${order.shippingAddress.district + ', ' + order.shippingAddress.city + ' ' + order.shippingAddress.zipCode}">City, ZIP</p>
+        </div>
+
+        <p><strong>What's Next?</strong></p>
+        <ul>
+            <li>Your order is now being processed</li>
+            <li>You'll receive another email when your order status changes</li>
+            <li>You can track your order anytime by logging into your account</li>
+        </ul>
+
+        <p>If you have any questions, please don't hesitate to contact us.</p>
+        
+        <p>Thank you for choosing YeditepeCardShop!</p>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 YeditepeCardShop. All rights reserved.</p>
+        <p>This is an automated email. Please do not reply to this message.</p>
+    </div>
+</body>
+</html>

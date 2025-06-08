@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - YeditepeCardShop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .order-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+        .status-pending { background-color: #ffc107; color: #000; }
+        .status-processing { background-color: #17a2b8; color: white; }
+        .status-confirmed { background-color: #28a745; color: white; }
+        .status-completed { background-color: #28a745; color: white; }
+        .status-mock_payment_completed { background-color: #28a745; color: white; }
+        .status-shipped { background-color: #6f42c1; color: white; }
+        .status-delivered { background-color: #20c997; color: white; }
+        .status-cancelled { background-color: #dc3545; color: white; }
+        
+        .order-info-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        
+        .order-items-table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-cancel {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(238, 90, 82, 0.4);
+            color: white;
+        }
+        
+        .btn-back {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header placeholder -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">YeditepeCardShop</a>
+        </div>
+    </nav>
+
+    <div class="order-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-receipt"></i> Order Details</h1>
+                    <p class="mb-0">View and manage your order information</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/profile" class="btn btn-back">
+                        <i class="fas fa-arrow-left"></i> Back to Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${order}">
+            <!-- Order Information -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="card order-info-card">
+                        <div class="card-header bg-light">
+                            <h4 class="mb-0"><i class="fas fa-info-circle"></i> Order Information</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Order ID:</strong> <span th:text="${order.id}"></span></p>
+                                    <p><strong>Order Date:</strong> 
+                                        <span th:text="${#temporals.format(order.orderDate, 'dd MMMM yyyy, HH:mm')}"></span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Status:</strong> 
+                                        <span th:class="'status-badge status-' + ${#strings.toLowerCase(order.status == 'MOCK_PAYMENT_COMPLETED' ? 'CONFIRMED' : order.status)}"
+                                              th:text="${order.status == 'MOCK_PAYMENT_COMPLETED' ? 'CONFIRMED' : order.status}"></span>
+                                    </p>
+                                    <p><strong>Total Items:</strong> <span th:text="${#lists.size(order.items)}"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card order-info-card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-shipping-fast"></i> Shipping Address</h5>
+                        </div>
+                        <div class="card-body">
+                            <div th:if="${order.shippingAddress}">
+                                <p class="mb-1" th:text="${order.shippingAddress.title}"></p>
+                                <p class="mb-1" th:text="${order.shippingAddress.addressLine}"></p>
+                                <p class="mb-1" th:text="${order.shippingAddress.district + ', ' + order.shippingAddress.city}"></p>
+                                <p class="mb-0" th:text="${order.shippingAddress.zipCode}"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card order-info-card mb-4">
+                <div class="card-header bg-light">
+                    <h4 class="mb-0"><i class="fas fa-shopping-bag"></i> Order Items</h4>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover order-items-table mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-end">Unit Price</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${order.items}">
+                                <td>
+                                    <strong th:text="${item.productName}"></strong>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary" th:text="${item.quantity}"></span>
+                                </td>
+                                <td class="text-end" th:text="${#numbers.formatCurrency(item.price)}"></td>
+                                <td class="text-end">
+                                    <strong th:text="${#numbers.formatCurrency(item.price * item.quantity)}"></strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                                <td class="text-end">
+                                    <strong th:text="${#numbers.formatCurrency(#aggregates.sum(order.items.![price * quantity]))}"></strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Shipping:</strong></td>
+                                <td class="text-end"><strong>FREE</strong></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Grand Total:</strong></td>
+                                <td class="text-end">
+                                    <h5 class="mb-0 text-primary" th:text="${#numbers.formatCurrency(#aggregates.sum(order.items.![price * quantity]))}"></h5>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="row">
+                <div class="col-12 text-center">
+                    <div th:if="${order.status == 'PENDING' or order.status == 'PROCESSING'}">
+                        <form th:action="@{/order/{orderId}/cancel(orderId=${order.id})}" method="post" 
+                              onsubmit="return confirm('Are you sure you want to cancel this order? This action cannot be undone.')" 
+                              class="d-inline">
+                            <button type="submit" class="btn btn-cancel me-3">
+                                <i class="fas fa-times"></i> Cancel Order
+                            </button>
+                        </form>
+                    </div>
+                    <div th:if="${order.status == 'CANCELLED'}" class="alert alert-warning d-inline-block">
+                        <i class="fas fa-info-circle"></i> This order has been cancelled
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:unless="${order}" class="text-center">
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i> Order not found or you don't have permission to view it.
+            </div>
+            <a href="/profile" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i> Back to Profile
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer placeholder -->
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <p>&copy; 2024 YeditepeCardShop. All rights reserved.</p>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

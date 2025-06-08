@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - YeditepeCS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/cart.css}">
+    <link rel="stylesheet" th:href="@{/css/account.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .checkout-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #2c2c2c;
+            border-radius: 8px;
+            color: #fff;
+        }
+        .checkout-container h1, .checkout-container h2 {
+            color: #e0e0e0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-section {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .form-section h2 {
+            text-align: left;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+        .form-row {
+            margin-bottom: 15px;
+        }
+        .form-row label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #ccc;
+        }
+        .form-row input[type="text"],
+        .form-row input[type="email"],
+        .form-row input[type="tel"],
+        .form-row input[type="radio"] {
+            /* Radio butonlar için genel stil ayarı */
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        .form-row input[type="text"],
+        .form-row input[type="email"],
+        .form-row input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background-color: #444;
+            color: #fff;
+            box-sizing: border-box;
+        }
+        .form-row label.inline-label { /* Radyo buton etiketleri için */
+            display: inline-block;
+            font-weight: normal;
+            margin-bottom: 0;
+        }
+        .checkout-summary {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 5px;
+        }
+        .checkout-summary h2 {
+             text-align: left;
+             margin-bottom: 15px;
+             font-size: 1.2em;
+             border-bottom: 1px solid #444;
+             padding-bottom: 10px;
+        }
+        .place-order-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .place-order-btn:hover {
+            background-color: #4cae4c;
+        }
+        .required {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <a th:href="@{/}" class="logo-link">
+            <div class="logo">
+                <img th:src="@{/images/logo.png}" alt="YeditepeCS Logo">
+                <span>YEDITEPECS</span>
+            </div>
+        </a>
+        <div class="search-bar">
+            <input type="text" placeholder="Which card are you looking for...">
+            <button>🔍</button>
+        </div>
+        <div class="user-actions">
+            <a th:href="@{/my-account}" sec:authorize="!isAuthenticated()">Login / Register</a>
+            <a th:href="@{/profile}" sec:authorize="isAuthenticated()">My Profile</a>
+            <a th:href="@{/cart}">
+                <span>Cart</span>
+                <i class="fa-solid fa-cart-shopping" style="font-size: 20px; color: white;"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <ul>
+            <li><a th:href="@{/}">Home</a></li>
+            <li><a th:href="@{/packs}">Booster Packs</a></li>
+            <li><a th:href="@{/boxes}">Booster Boxes</a></li>
+            <li><a th:href="@{/cases}">Cases</a></li>
+        </ul>
+    </nav>
+
+    <!-- Checkout Content -->
+    <div class="checkout-container">
+        <h1>Checkout</h1>
+
+        <div th:if="${param.error}" class="alert alert-danger" style="color: red; margin-bottom: 15px;">
+            <p th:text="${param.error}">Error message</p>
+        </div>
+        <div th:if="${param.success}" class="alert alert-success" style="color: green; margin-bottom: 15px;">
+            <p th:text="${param.success}">Success message</p>
+        </div>
+
+
+        <form th:action="@{/checkout/process}" method="post">
+            <!-- Shipping Address Options -->
+            <section class="form-section">
+                <h2>Shipping Option</h2>
+                <div class="form-row">
+                    <input type="radio" id="useExistingAddress" name="addressSelectionMethod" value="EXISTING" th:checked="${(param.addressSelectionMethod == 'EXISTING') or (!#lists.isEmpty(userAddresses) and param.addressSelectionMethod == null)}" onchange="toggleAddressSections()">
+                    <label for="useExistingAddress">Use a registered address</label>
+                </div>
+                <div class="form-row">
+                    <input type="radio" id="useNewAddress" name="addressSelectionMethod" value="NEW" th:checked="${(#lists.isEmpty(userAddresses) and param.addressSelectionMethod == null) or param.addressSelectionMethod == 'NEW'}" onchange="toggleAddressSections()">
+                    <label for="useNewAddress">Enter a new address</label>
+                </div>
+            </section>
+
+            <!-- Registered Addresses (Conditionally Displayed) -->
+            <section class="form-section" id="existingAddressesSection" style="display: none;">
+                <h2>My Registered Addresses</h2>
+                <div th:if="${userAddresses == null or #lists.isEmpty(userAddresses)}">
+                    <p>You have no registered addresses. Please add one below or in your account settings.</p>
+                </div>
+                <div class="form-row" th:each="address, iterStat : ${userAddresses}" th:unless="${userAddresses == null or #lists.isEmpty(userAddresses)}">
+                    <input type="radio" name="selectedAddressId" th:value="${address.id}" th:id="'address_' + ${iterStat.index}" th:checked="${iterStat.index == 0 and (param.addressSelectionMethod == null or param.addressSelectionMethod == 'EXISTING')}">
+                    <label th:for="'address_' + ${iterStat.index}" style="display: inline-block; margin-left: 5px;">
+                        <strong th:text="${address.title != null ? address.title : ('Address ' + (iterStat.index + 1))}">Address Title</strong><br>
+                        <span th:text="${address.street}">123 Main St</span>,
+                        <span th:text="${address.city}">Anytown</span>,
+                        <span th:text="${address.district}">District</span> -
+                        <span th:text="${address.zipCode}">12345</span>
+                        <span th:text="${address.addressLine}">123 Main St</span><br/>
+                        <span th:text="${address.city} + ', ' + ${address.district} + ', ' + ${address.zipCode}">Anytown, District, 12345</span><br/>
+                    </label>
+                </div>
+            </section>
+            <div id="noExistingAddressMessage" th:if="${#lists.isEmpty(userAddresses)}" style="display:none;">
+                 <p>You have no registered addresses. Please enter a new address.</p>
+            </div>
+
+
+            <!-- New Shipping Information (Conditionally Displayed) -->
+            <section class="form-section" id="newAddressFormSection">
+                <h2>New Shipping Address</h2>
+                 <div class="form-row">
+                    <label for="newAddressTitle">Address Title (e.g., Home, Work) <span class="required">*</span></label>
+                    <input type="text" id="newAddressTitle" name="newAddressTitle">
+                </div>
+                <div class="form-row">
+                    <label for="newStreet">Address Line 1 <span class="required">*</span></label>
+                    <input type="text" id="newStreet" name="newStreet">
+                </div>
+                <div class="form-row">
+                    <label for="newAddressLine2">Address Line 2 (Optional)</label>
+                    <input type="text" id="newAddressLine2" name="newAddressLine2">
+                </div>
+                <div class="form-row">
+                    <label for="newCity">City <span class="required">*</span></label>
+                    <input type="text" id="newCity" name="newCity">
+                </div>
+                <div class="form-row">
+                    <label for="newState">State/District <span class="required">*</span></label>
+                    <input type="text" id="newState" name="newState">
+                </div>
+                <div class="form-row">
+                    <label for="newZipCode">Postal Code <span class="required">*</span></label>
+                    <input type="text" id="newZipCode" name="newZipCode">
+                </div>
+                <div class="form-row"> <!-- This fullName is for delivery, not directly for Address object, but controller takes it -->
+                    <label for="fullName">Full Name (for this delivery) <span class="required">*</span></label>
+                    <input type="text" id="fullName" name="fullName">
+                </div>
+                <div class="form-row"> <!-- This phone is for delivery, not directly for Address object, but controller takes it -->
+                    <label for="phone">Phone Number (for this delivery) <span class="required">*</span></label>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+            </section>
+
+            <!-- Payment Information -->
+            <section class="form-section" id="paymentInformationSection">
+                <h2>Payment Information (Mock)</h2>
+                <p style="font-size: 0.9em; color: #ffc107; margin-bottom: 15px;">
+                    Note: For demonstration purposes only. Do not enter real credit card details.
+                    This form does not securely process or store payment information.
+                </p>
+                <div class="form-row">
+                    <label for="cardholderName">Cardholder Name <span class="required">*</span></label>
+                    <input type="text" id="cardholderName" name="cardholderName" required>
+                </div>
+                <div class="form-row">
+                    <label for="cardNumber">Card Number <span class="required">*</span></label>
+                    <input type="text" id="cardNumber" name="cardNumber" placeholder="0000 0000 0000 0000" required minlength="16" maxlength="16" pattern="[0-9]{16}" title="Card number must be 16 digits.">
+                </div>
+                <div class="form-row" style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label for="expiryMonth">Expiry Date <span class="required">*</span></label>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="expiryMonth" name="expiryMonth" required style="flex: 1; padding: 10px; border: 1px solid #555; border-radius: 4px; background-color: #444; color: #fff;">
+                                <option value="" disabled selected>Month</option>
+                                <option value="01">01 - January</option>
+                                <option value="02">02 - February</option>
+                                <option value="03">03 - March</option>
+                                <option value="04">04 - April</option>
+                                <option value="05">05 - May</option>
+                                <option value="06">06 - June</option>
+                                <option value="07">07 - July</option>
+                                <option value="08">08 - August</option>
+                                <option value="09">09 - September</option>
+                                <option value="10">10 - October</option>
+                                <option value="11">11 - November</option>
+                                <option value="12">12 - December</option>
+                            </select>
+                            <select id="expiryYear" name="expiryYear" required style="flex: 1; padding: 10px; border: 1px solid #555; border-radius: 4px; background-color: #444; color: #fff;">
+                                <option value="" disabled selected>Year</option>
+                                <!-- Populating next 10 years. For a real app, generate dynamically with JS or server-side -->
+                                <option th:each="i : ${#numbers.sequence(#dates.year(#dates.createNow()), #dates.year(#dates.createNow()) + 10)}" th:value="${i}" th:text="${i}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="cvv">CVV <span class="required">*</span></label>
+                        <input type="text" id="cvv" name="cvv" placeholder="123" required minlength="3" maxlength="3" pattern="[0-9]{3}" title="CVV must be 3 digits.">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Order Summary -->
+            <section class="checkout-summary">
+                <h2>Order Summary</h2>
+                <div th:if="${cart != null && not #lists.isEmpty(cart.cartItems)}">
+                    <table class="cart-table" style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #444;">Product</th>
+                                <th style="text-align: right; padding: 8px; border-bottom: 1px solid #444;">Price</th>
+                                <th style="text-align: center; padding: 8px; border-bottom: 1px solid #444;">Quantity</th>
+                                <th style="text-align: right; padding: 8px; border-bottom: 1px solid #444;">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${cart.cartItems}" style="border-bottom: 1px solid #444;">
+                                <td style="padding: 8px;">
+                                    <img th:if="${item.product.imagePath}" th:src="@{'/images/' + ${item.product.imagePath}}" th:alt="${item.product.title}" style="width: 50px; height: auto; margin-right: 10px; vertical-align: middle; border-radius: 4px;">
+                                    <span th:text="${item.product.title}">Product Name</span>
+                                </td>
+                                <td style="text-align: right; padding: 8px;" th:text="${#numbers.formatDecimal(item.product.basePrice, 1, 'COMMA', 2, 'POINT')} + ' $'">0.00 $</td>
+                                <td style="text-align: center; padding: 8px;" th:text="${item.quantity}">1</td>
+                                <td style="text-align: right; padding: 8px;" th:text="${#numbers.formatDecimal(item.product.basePrice * item.quantity, 1, 'COMMA', 2, 'POINT')} + ' $'">0.00 $</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="text-align: right; margin-top: 20px;">
+                        <div class="summary-row" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Subtotal:</span>
+                            <span th:text="${#numbers.formatDecimal(cart.subtotal, 1, 'COMMA', 2, 'POINT')} + ' $'">0.00 $</span>
+                        </div>
+                        <div class="summary-row" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Shipping:</span>
+                            <span th:text="${cart.shippingCost > 0 ? #numbers.formatDecimal(cart.shippingCost, 1, 'COMMA', 2, 'POINT') + ' $' : 'Free'}">Free</span>
+                        </div>
+                        <div class="summary-row total" style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2em; border-top: 1px solid #444; padding-top: 10px; color: #ff0000;">
+                            <span>Total:</span>
+                            <span th:text="${#numbers.formatDecimal(cart.cartTotal, 1, 'COMMA', 2, 'POINT')} + ' $'">0.00 $</span>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${cart == null || #lists.isEmpty(cart.cartItems)}">
+                    <p>Your cart is currently empty or could not be loaded.</p>
+                </div>
+            </section>
+
+
+            <button type="submit" class="place-order-btn">Place Order</button>
+        </form>
+    </div>
+
+    <!-- Footer (Placeholder) -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function toggleAddressSections() {
+        const useExistingRadio = document.getElementById('useExistingAddress');
+        const useNewRadio = document.getElementById('useNewAddress');
+        const existingSection = document.getElementById('existingAddressesSection');
+        const newSection = document.getElementById('newAddressFormSection');
+        const noExistingAddressMsg = document.getElementById('noExistingAddressMessage');
+
+        const newAddressTitleInput = document.getElementById('newAddressTitle');
+        const newStreetInput = document.getElementById('newStreet');
+        const newCityInput = document.getElementById('newCity');
+        const newStateInput = document.getElementById('newState');
+        const newZipCodeInput = document.getElementById('newZipCode');
+        const fullNameInput = document.getElementById('fullName'); // For delivery
+        const phoneInput = document.getElementById('phone');     // For delivery
+
+        let useExisting = useExistingRadio ? useExistingRadio.checked : false;
+        const hasUserAddresses = /*[[${not #lists.isEmpty(userAddresses)}]]*/ false;
+
+        if (!hasUserAddresses && useExistingRadio) { // If no addresses, force "NEW"
+            useExistingRadio.disabled = true; // Disable "EXISTING" if no addresses
+            if (useNewRadio) useNewRadio.checked = true;
+            useExisting = false;
+        } else if (hasUserAddresses && useExistingRadio) {
+             useExistingRadio.disabled = false;
+        }
+
+
+        if (existingSection) {
+            existingSection.style.display = useExisting && hasUserAddresses ? 'block' : 'none';
+        }
+        if (noExistingAddressMsg) {
+            noExistingAddressMsg.style.display = useExisting && !hasUserAddresses ? 'block' : 'none';
+        }
+
+        newSection.style.display = useExisting ? 'none' : 'block';
+
+        // Manage 'required' attribute for new address fields
+        const requiredForNew = !useExisting;
+        if (newAddressTitleInput) newAddressTitleInput.required = requiredForNew;
+        if (newStreetInput) newStreetInput.required = requiredForNew;
+        if (newCityInput) newCityInput.required = requiredForNew;
+        if (newStateInput) newStateInput.required = requiredForNew;
+        if (newZipCodeInput) newZipCodeInput.required = requiredForNew;
+        if (fullNameInput) fullNameInput.required = requiredForNew; // Also manage for delivery details
+        if (phoneInput) phoneInput.required = requiredForNew;       // Also manage for delivery details
+
+        // Ensure at least one registered address radio is checked if "EXISTING" is selected
+        if (useExisting && hasUserAddresses && existingSection) {
+            const registeredAddressRadios = existingSection.querySelectorAll('input[name="selectedAddressId"]');
+            let oneChecked = false;
+            registeredAddressRadios.forEach(radio => {
+                if (radio.checked) oneChecked = true;
+            });
+            if (!oneChecked && registeredAddressRadios.length > 0) {
+                registeredAddressRadios[0].checked = true; // Default to first if none selected
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const hasUserAddresses = /*[[${not #lists.isEmpty(userAddresses)}]]*/ false;
+        const useNewRadio = document.getElementById('useNewAddress');
+        const useExistingRadio = document.getElementById('useExistingAddress');
+
+        if (!hasUserAddresses && useNewRadio) {
+            useNewRadio.checked = true;
+            if(useExistingRadio) useExistingRadio.checked = false; // Ensure existing is not checked
+        } else if (hasUserAddresses && useExistingRadio && !useNewRadio.checked) {
+            // If there are addresses and new is not checked, ensure existing is checked
+            // This handles the case where Thymeleaf might pre-check 'useExistingAddress'
+            // and it's the correct default.
+             if(!useExistingRadio.checked) useExistingRadio.checked = true;
+        }
+        // If both are somehow unchecked, and there are addresses, default to existing.
+        // If no addresses, it will default to new due to above logic.
+        if(hasUserAddresses && useExistingRadio && useNewRadio && !useExistingRadio.checked && !useNewRadio.checked){
+            useExistingRadio.checked = true;
+        }
+
+        toggleAddressSections(); // Initial call to set the correct state
+    });
+    /*]]>*/
+</script>
+</body>
+</html>

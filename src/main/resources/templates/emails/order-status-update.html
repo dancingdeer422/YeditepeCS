@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Status Update</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+        .status-update {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+        .status-old {
+            background: #6c757d;
+            color: white;
+        }
+        .status-new {
+            background: #28a745;
+            color: white;
+        }
+        .arrow {
+            font-size: 1.5em;
+            color: #667eea;
+            margin: 0 10px;
+        }
+        .order-details {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .footer {
+            background: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 0 0 8px 8px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📦 Order Status Update</h1>
+        <p>Your order status has been updated</p>
+    </div>
+
+    <div class="content">
+        <p>Dear <span th:text="${user.firstName + ' ' + user.lastName}">Customer</span>,</p>
+        
+        <p>We wanted to let you know that your order status has been updated:</p>
+
+        <div class="status-update">
+            <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
+                <span class="status-badge status-old" th:text="${oldStatus}">OLD STATUS</span>
+                <span class="arrow">→</span>
+                <span class="status-badge status-new" th:text="${newStatus}">NEW STATUS</span>
+            </div>
+        </div>
+
+        <div class="order-details">
+            <h3>Order Information</h3>
+            <p><strong>Order ID:</strong> <span th:text="${order.id}">ORDER123</span></p>
+            <p><strong>Order Date:</strong> <span th:text="${#temporals.format(order.orderDate, 'dd MMMM yyyy, HH:mm')}">Date</span></p>
+            <p><strong>Current Status:</strong> <span class="status-badge status-new" th:text="${newStatus}">STATUS</span></p>
+        </div>
+
+        <div th:if="${newStatus == 'COMPLETED'}">
+            <p><strong>🎉 Great news!</strong> Your order has been completed and is ready for shipping!</p>
+        </div>
+
+        <div th:if="${newStatus == 'PROCESSING'}">
+            <p><strong>⚡ Your order is now being processed!</strong> We're preparing your items for shipment.</p>
+        </div>
+
+        <div th:if="${newStatus == 'SHIPPED'}">
+            <p><strong>🚚 Your order has been shipped!</strong> You should receive it soon.</p>
+        </div>
+
+        <p>You can always check your order status by logging into your account on our website.</p>
+        
+        <p>Thank you for choosing YeditepeCardShop!</p>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 YeditepeCardShop. All rights reserved.</p>
+        <p>This is an automated email. Please do not reply to this message.</p>
+    </div>
+</body>
+</html>
