@@ -1,0 +1,23 @@
+body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#f8f9fa;color:#333}
+.cart-header{background:#1e1e1e;color:#fff;padding:16px 32px;display:flex;justify-content:space-between;align-items:center}
+.cart-header h1{margin:0;font-size:24px}
+a.btn-outline{border:1px solid #fff;color:#fff;padding:6px 14px;text-decoration:none;border-radius:4px}
+a.btn-outline:hover{background:#fff;color:#1e1e1e}
+.empty-cart{text-align:center;padding:80px 20px;font-size:20px}
+.cart-wrapper{max-width:1100px;margin:40px auto;padding:0 20px}
+.cart-table{width:100%;border-collapse:collapse}
+.cart-table th,.cart-table td{padding:12px;border-bottom:1px solid #ddd;text-align:center}
+.prod-info{display:flex;align-items:center;gap:12px}
+.prod-info img{width:60px;height:60px;object-fit:cover;border-radius:6px}
+.qty-form{display:flex;gap:8px;justify-content:center}
+.qty-input{width:70px;padding:4px}
+.btn-small{padding:4px 8px;border:none;background:#ff0000;color:#fff;border-radius:4px;cursor:pointer}
+.btn-small:hover{background:#cc0000}
+.btn-link{background:transparent;border:none;color:#ff0000;cursor:pointer}
+.btn-link:hover{text-decoration:underline}
+.summary-box{margin-top:24px;text-align:right}
+.summary-box .total{font-size:22px;font-weight:700;margin:0 0 16px}
+.btn-outline{border:1px solid #ff0000;background:transparent;color:#ff0000;padding:8px 18px;border-radius:4px;cursor:pointer;margin-right:12px}
+.btn-outline:hover{background:#ff0000;color:#fff}
+.btn-primary{background:#ff0000;color:#fff;padding:10px 22px;border-radius:4px;text-decoration:none}
+.btn-primary:hover{background:#cc0000}
